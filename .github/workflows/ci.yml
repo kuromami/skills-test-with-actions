@@ -1,0 +1,27 @@
+name: CI
+
+on:    # トリガーを定義
+  push:                   # mainブランチへのpush時に実行する
+    branches: [ "main" ]
+  pull_request:           # mainブランチへのpull_request時に実行する
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:   # jobの名前
+    runs-on: ubuntu-latest  # アクションするためのサーバーを定義（ここではUbuntuを指定）
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Run markdown lint
+        run: |
+          npm install remark-cli remark-preset-lint-consistent
+          npx remark . --use remark-preset-lint-consistent --frail
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: remark-lint-report
+          path: public/

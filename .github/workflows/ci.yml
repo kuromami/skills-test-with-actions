@@ -1,0 +1,25 @@
+name: CI
+
+on:    # トリガーを定義
+  push:                   # mainブランチへのpush時に実行する
+    branches: [ "main" ]
+  pull_request:           # mainブランチへのpull_request時に実行する
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run markdown lint
+        run: |
+          npm install remark-cli remark-preset-lint-consistent vfile-reporter-json
+          npx remark . --use remark-preset-lint-consistent --report vfile-reporter-json 2> remark-lint-report.json
+
+     - uses: actions/upload-artifact@v3
+        with:
+          name: remark-lint-report
+          path: remark-lint-report.json

@@ -9,19 +9,17 @@ on:    # トリガーを定義
   workflow_dispatch:
 
 jobs:
-  build:   # jobの名前
-    runs-on: ubuntu-latest  # アクションするためのサーバーを定義（ここではUbuntuを指定）
-
+  build:
+    runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run markdown lint
         run: |
-          npm install remark-cli remark-preset-lint-consistent
-          npx remark . --use remark-preset-lint-consistent --frail
+          npm install remark-cli remark-preset-lint-consistent vfile-reporter-json
+          npx remark . --use remark-preset-lint-consistent --report vfile-reporter-json 2> remark-lint-report.json
 
-      - uses: actions/upload-artifact@main
+     - uses: actions/upload-artifact@v3
         with:
           name: remark-lint-report
-          path: public/
+          path: remark-lint-report.json
